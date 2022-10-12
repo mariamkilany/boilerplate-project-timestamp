@@ -18,15 +18,30 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
+const isValidDate = function(date) {
+    return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
+}
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:date", function (req, res) {
+  var {date} =req.params
+  var arr =date.split('-')
+  var validDate;
+  // console.log(arr,!isNaN(date),parseInt(date),!date instanceof Date)
+  if(arr.length<3){
+    if(!isNaN(date)){
+      date=parseInt(date)
+    }
+  }
+  validDate =new Date(date).toUTCString()
+  if(validDate==="Invalid Date"){
+    return res.json({error:"Invalid Date"})
+  }
+  res.json({unix:new Date(date).getTime() ,utc:validDate})
 });
 
 
 
-// listen for requests :)
+// listen for requests :) 
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
